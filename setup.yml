@@ -1,0 +1,71 @@
+- name: Automated Linux Server Setup
+  hosts: servers
+  become: yes
+
+  tasks:
+
+    - name: Update system
+      apt:
+        update_cache: yes
+
+    - name: Install packages
+      apt:
+        name:
+          - nginx
+          - docker.io
+          - git
+          - ufw
+        state: present
+
+    - name: Start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create a new user
+      user:
+        name: adminuser
+        groups: sudo
+        append: yes
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Set up SSH directory for user
+      file:
+        path: /home/adminuser/.ssh
+        state: directory
+        owner: adminuser
+        group: adminuser
+        mode: '0700'
+
+    - name: Disable root login
+      lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^PermitRootLogin'
+       line: 'PermitRootLogin no'
+
+    - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+
+    - name: Allow SSH
+      ufw:
+        rule: allow
+        port: '22'
+
+    - name: Allow HTTP
+      ufw:
+        rule: allow
+        port: '80'
+
+    - name: Allow HTTPS
+      ufw:
+        rule: allow
+        port: '443'
+
