@@ -101,7 +101,7 @@ http://localhost
 
 ### NGINX Running
 
-![NGINX](screenshots/nginx-running.png)
+![NGINX](Screenshots/nginx-running.png)
 
 ---
 
